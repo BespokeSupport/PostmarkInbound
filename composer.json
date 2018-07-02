@@ -1,0 +1,23 @@
+{
+  "name": "bespoke-support/postmark-inbound",
+  "description": "Postmark Inbound API",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Richard Seymour",
+      "email": "web@bespoke.support"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "BespokeSupport\\PostmarkInbound\\": "lib/"
+    }
+  },
+  "require-dev": {
+    "jjaffeux/postmark-inbound-php": "@stable",
+    "symfony/phpunit-bridge": "@stable"
+  },
+  "require": {
+    "php": "5.*|7.*"
+  }
+}
