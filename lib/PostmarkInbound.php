@@ -30,11 +30,22 @@ use BespokeSupport\PostmarkInbound\Exception\PostmarkInboundParseException;
  * @property \stdClass|PostmarkInboundElementFull[] BccFull
  * @property \stdClass|PostmarkInboundElementFull[] CcFull
  * @property \stdClass|PostmarkInboundElementFull[] ToFull
- * @method FromEmail
- * @method FromName
- * @method Recipients
- * @method UndisclosedRecipients
- * @method Headers
+ * @method string FromEmail
+ * @method string FromName
+ * @method string Recipients
+ * @method string UndisclosedRecipients
+ * @method string Subject
+ * @method string Date
+ * @method string OriginalRecipient
+ * @method string ReplyTo
+ * @method string MailboxHash
+ * @method string Tag
+ * @method string MessageID
+ * @method string TextBody
+ * @method string HtmlBody
+ * @method string StrippedTextReply
+ * @method PostmarkInboundElementHeaders Headers
+ * @method PostmarkInboundElementAttachments Attachments
  */
 class PostmarkInbound
 {
