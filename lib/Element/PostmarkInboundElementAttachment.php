@@ -2,6 +2,8 @@
 
 namespace BespokeSupport\PostmarkInbound\Element;
 
+use SplFileInfo;
+
 /**
  * Class PostmarkInboundElementAttachment
  * @package BespokeSupport\PostmarkInbound\Element
@@ -23,10 +25,19 @@ class PostmarkInboundElementAttachment extends \ArrayObject
 
     /**
      * @param $directory
+     * @return SplFileInfo
      */
-    public function Download($directory)
+    public function Download($directory = null)
     {
-        file_put_contents($directory . DIRECTORY_SEPARATOR . $this->Name, $this->getContents());
+        if (!$directory) {
+            $directory = sys_get_temp_dir();
+        }
+
+        $path = $directory . DIRECTORY_SEPARATOR . $this->Name;
+
+        file_put_contents($path, $this->getContents());
+
+        return new SplFileInfo($path);
     }
 
     /**
