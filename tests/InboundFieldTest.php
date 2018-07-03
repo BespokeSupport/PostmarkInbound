@@ -64,6 +64,7 @@ class InboundFieldTest extends \PHPUnit\Framework\TestCase
         $from = 'support@postmarkapp.com';
 
         $this->assertEquals($from, $this->parsed->From);
+        $this->assertEquals($from, $this->parsed->From());
         $this->assertEquals($from, $this->parsed->FromFull->Email);
     }
 
@@ -106,8 +107,21 @@ class InboundFieldTest extends \PHPUnit\Framework\TestCase
         $this->assertCount(1, $this->parsed->Attachments);
         $this->assertNotNull($this->parsed->getAttachment('test.txt'));
         $this->assertNotNull($this->parsed->Attachments[0]);
-        $this->assertEquals('This is attachment contents, base-64 encoded.',
-            $this->parsed->Attachments[0]->getContents());
+
+        $this->assertEquals(
+            'This is attachment contents, base-64 encoded.',
+            $this->parsed->Attachments[0]->getContents()
+        );
+
+        $file = $this->parsed->Attachments[0]->Download();
+
+        $this->assertNotNull($file);
+        $this->assertInstanceOf(SplFileInfo::class, $file);
+
+        $this->assertEquals(
+            'This is attachment contents, base-64 encoded.',
+            file_get_contents($file->getRealPath())
+        );
     }
 
     /**
@@ -125,6 +139,33 @@ class InboundFieldTest extends \PHPUnit\Framework\TestCase
     {
         $this->assertFalse($this->parsed->isSpam());
         $this->assertEquals(-0.1, $this->parsed->getSpamScore());
+    }
+
+    /**
+     *
+     */
+    public function testHeaders()
+    {
+        $headers = [
+            'X-Spam-Status' => null,
+            'X-Spam-Checker-Version' => null,
+            'X-Spam-Score' => -0.1,
+            'X-Spam-Tests' => 'DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,SPF_PASS',
+            'Received-SPF' => null,
+            'MIME-Version' => null,
+            'Message-ID' => null,
+        ];
+        foreach ($headers as $key => $val) {
+            if (is_bool($val)) {
+                if ($val) {
+                    $this->assertTrue($this->parsed->Headers($key));
+                } else {
+                    $this->assertTrue($this->parsed->Headers($key));
+                }
+            } else {
+                $this->assertEquals($val, $this->parsed->Headers($key));
+            }
+        }
     }
 
     /**

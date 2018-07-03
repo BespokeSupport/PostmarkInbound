@@ -30,10 +30,11 @@ use BespokeSupport\PostmarkInbound\Exception\PostmarkInboundParseException;
  * @property \stdClass|PostmarkInboundElementFull[] BccFull
  * @property \stdClass|PostmarkInboundElementFull[] CcFull
  * @property \stdClass|PostmarkInboundElementFull[] ToFull
+ * @method string From
  * @method string FromEmail
  * @method string FromName
- * @method string Recipients
- * @method string UndisclosedRecipients
+ * @method array Recipients
+ * @method array UndisclosedRecipients
  * @method string Subject
  * @method string Date
  * @method string OriginalRecipient
@@ -44,7 +45,7 @@ use BespokeSupport\PostmarkInbound\Exception\PostmarkInboundParseException;
  * @method string TextBody
  * @method string HtmlBody
  * @method string StrippedTextReply
- * @method PostmarkInboundElementHeaders Headers
+ * @method string|boolean|null Headers($key)
  * @method PostmarkInboundElementAttachments Attachments
  */
 class PostmarkInbound
@@ -314,13 +315,7 @@ class PostmarkInbound
      */
     public function isSpam()
     {
-        $header = $this->getHeader('X-Spam-Status');
-
-        if (!$header) {
-            return null;
-        }
-
-        return ($header === 'Yes');
+        return $this->getHeader('X-Spam-Status');
     }
 
     /**
@@ -329,9 +324,18 @@ class PostmarkInbound
      */
     public function getHeader($name)
     {
+        if (is_array($name)) {
+            $name = $name[0];
+        }
+
         foreach ($this->getHeaders() as $header) {
             if ($header->Name === $name) {
-                return $header->Value;
+                $value = $header->Value;
+                if (in_array($value, ['Yes', 'No'])) {
+                    return !(in_array($value, ['No']));
+                }
+
+                return $value;
             }
         }
 
